@@ -1,0 +1,17 @@
+# config.toml
+
+# The coldkey used for registration
+coldkey = "super strong mnemonic phrase, or seed"
+
+# The hotkey to be registered
+hotkey = "super strong mnemonic phrase, or seed"
+
+# The network UID
+netuid = 12
+
+# The maximum cost allowed for registration
+max_cost = 1500
+
+# The chain endpoint URL (optional, will use default if not specified)
+# Better to run local node 
+chain_endpoint = "wss://entrypoint-finney.opentensor.ai:443"

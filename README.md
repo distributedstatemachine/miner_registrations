@@ -59,4 +59,3 @@ See `config.example.toml` for an example configuration file.
 
  Do not commit it to the repo, as it contains your keys. `.gitignore` it. 
 
-# miner_registrations
