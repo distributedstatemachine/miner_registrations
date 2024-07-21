@@ -1,0 +1,9 @@
+[package]
+name = "shared"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+subxt = { workspace = true }
+log = { workspace = true }
+tokio = { workspace = true }

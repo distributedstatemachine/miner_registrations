@@ -1,0 +1,24 @@
+[package]
+name = "subtensor_analysis"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+subxt = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
+log = { workspace = true }
+env_logger = { workspace = true }
+polars = { version = "0.35.0", features = ["parquet"] }
+futures = { workspace = true }
+chrono = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+shared = { workspace = true }
+clap = { workspace = true, features = ["derive"] }
+
+[[bin]]
+name = "subtensor_analysis"
+path = "src/main.rs"
+
+[lib]
+name = "subtensor_analysis"
+path = "src/lib.rs"
