@@ -5,7 +5,7 @@ use clap::Parser;
 use log::{error, info, warn};
 use scale_value::{Composite, Value};
 use serde::Deserialize;
-use shared::estimate_block_time;
+use shared::{estimate_block_time, parse_config};
 use sp_core::H256;
 use std::fs;
 use std::sync::Arc;
@@ -218,28 +218,4 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     info!("Registration process completed successfully.");
     Ok(())
-}
-
-/// Parses configuration from either a config file or command line arguments
-///
-/// # Returns
-///
-/// A `Result` containing `RegistrationParams` if parsing is successful, or an `Err` if it fails
-fn parse_config() -> Result<RegistrationParams, Box<dyn std::error::Error>> {
-    if let Ok(config_str) = fs::read_to_string("config.toml") {
-        info!("Found config.toml, parsing...");
-        match toml::from_str(&config_str) {
-            Ok(params) => {
-                info!("Successfully parsed config.toml");
-                Ok(params)
-            }
-            Err(e) => {
-                error!("Error parsing config.toml: {}", e);
-                Err(Box::new(e))
-            }
-        }
-    } else {
-        info!("No config.toml found, parsing command line arguments...");
-        Ok(RegistrationParams::parse())
-    }
 }

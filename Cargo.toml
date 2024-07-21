@@ -1,5 +1,10 @@
 [workspace]
-members = ["miner_registration", "shared", "subnet_registration", "subtensor_analysis"]
+members = [
+    "miner_registration",
+    "shared",
+    "subnet_registration",
+    "subtensor_analysis",
+]
 
 [workspace.dependencies]
 chrono = "0.4.38"
@@ -13,7 +18,7 @@ codec = { package = "parity-scale-codec", version = "3.6.12", default-features =
 ] }
 serde = "1.0.204"
 sp-core = "34.0.0"
-subxt = { version = "0.37.0", features = ["substrate-compat"] }
+subxt = { version = "0.37.0", features = ["substrate-compat", "jsonrpsee"] }
 toml = "0.8.15"
 tokio = { version = "1.38.1", features = ["full"] }
 scale-value = "0.16.0"

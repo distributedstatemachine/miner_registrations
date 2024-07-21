@@ -1,7 +1,10 @@
 mod errors;
 
 use crate::errors::Error;
-use log::{info, warn};
+use clap::Parser;
+use log::{error, info, warn};
+use serde::de::DeserializeOwned;
+use std::fs;
 use std::time::{Duration, Instant};
 use subxt::{OnlineClient, SubstrateConfig};
 
@@ -92,3 +95,22 @@ pub async fn estimate_block_time(
 
 // TODO: Add unit tests to verify the function's behavior under various conditions,
 // including simulated network delays and edge cases.
+
+pub fn parse_config<T: Parser + DeserializeOwned>() -> Result<T, Box<dyn std::error::Error>> {
+    if let Ok(config_str) = fs::read_to_string("config.toml") {
+        info!("Found config.toml, parsing...");
+        match toml::from_str(&config_str) {
+            Ok(params) => {
+                info!("Successfully parsed config.toml");
+                Ok(params)
+            }
+            Err(e) => {
+                error!("Error parsing config.toml: {}", e);
+                Err(Box::new(e))
+            }
+        }
+    } else {
+        info!("No config.toml found, parsing command line arguments...");
+        Ok(T::parse())
+    }
+}
