@@ -14,6 +14,7 @@ use subxt::ext::sp_core::{sr25519, Pair};
 use subxt::tx::DefaultPayload;
 use subxt::{tx::PairSigner, OnlineClient, SubstrateConfig};
 use tokio::sync::Mutex;
+use std::str::FromStr;
 
 /// Struct to hold registration parameters, can be parsed from command line or config file
 #[derive(Parser, Deserialize, Debug)]
@@ -29,7 +30,7 @@ struct RegistrationParams {
     netuid: u16,
 
     #[clap(long)]
-    max_cost: u64,
+    max_cost_tao: String, // Changed to String to allow decimal input
 
     #[clap(long, default_value = "ws://127.0.0.1:9944")]
     chain_endpoint: String,
@@ -78,6 +79,9 @@ async fn register_hotkey(params: &RegistrationParams) -> Result<(), Box<dyn std:
         ("hotkey", hotkey.public().0.to_vec().into()),
     ]));
 
+    // Convert max_cost_tao from TAO to RAO
+    let max_cost_rao: u64 = (f64::from_str(&params.max_cost_tao)? * 1e9).round() as u64;
+
     // Main registration loop
     while let Some(block) = blocks.next().await {
         let block = block?;
@@ -97,15 +101,16 @@ async fn register_hotkey(params: &RegistrationParams) -> Result<(), Box<dyn std:
 
         // Check recycle cost
         let recycle_cost_start = Instant::now();
-        let recycle_cost = get_recycle_cost(&client, params.netuid).await?;
+        let recycle_cost_rao = get_recycle_cost(&client, params.netuid).await?;
+        let recycle_cost_tao = recycle_cost_rao as f64 / 1e9;
         let recycle_cost_duration = recycle_cost_start.elapsed();
         info!("⏱️ get_recycle_cost took {:?}", recycle_cost_duration);
 
         // Skip if cost exceeds maximum allowed
-        if recycle_cost > params.max_cost {
+        if recycle_cost_rao > max_cost_rao {
             warn!(
-                "💸 Recycle cost ({}) exceeds threshold ({}). Skipping registration attempt.",
-                recycle_cost, params.max_cost
+                "💸 Recycle cost ({:.9} TAO) exceeds threshold ({} TAO). Skipping registration attempt.",
+                recycle_cost_tao, params.max_cost_tao
             );
             tokio::time::sleep(Duration::from_secs(1)).await;
             continue;
